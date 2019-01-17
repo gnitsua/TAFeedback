@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+          integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+          integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+          crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+          integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+          crossorigin="anonymous"></script>
+
+  <style>
+    .card {
+      margin-bottom: 15px;
+    }
+  </style>
+
+  <script>
+      const example_gradesheet = JSON.parse("[{\"sectionName\":\"Pitch\",\"feedbacks\":[{\"feedback\":\"Pitch: \",\"pointValue\":\"0\"},{\"feedback\":\"Good pitch\",\"pointValue\":\"10\"},{\"feedback\":\" but try to fidget less\",\"pointValue\":\"-1\"},{\"feedback\":\" and make better eye contact with your audience.\",\"pointValue\":\"-1\"}]},\n" +
+          "{\"sectionName\":\"Brainstorming list: \",\"feedbacks\":[{\"feedback\":\"Ideation: \",\"pointValue\":\"0\"}, {\"feedback\":\"10 ideas or more\",\"pointValue\":\"5\"},{\"feedback\":\"5-1 ideas\",\"pointValue\":\"3\"},{\"feedback\":\"Not readable\",\"pointValue\":\"-1\"}]},\n" +
+          "{\"sectionName\":\"Developing ideas: \",\"feedbacks\":[{\"feedback\":\"Developing ideas: \",\"pointValue\":\"0\"},{ \"feedback\":\"well described idea\",\"pointValue\":\"3.33\"},{\"feedback\":\"First idea was \",\"pointValue\":\"0\"},{\"feedback\":\"Second idea was \",\"pointValue\":\"0\"},{\"feedback\":\"Third idea was \",\"pointValue\":\"0\"},{\"feedback\":\"missing the who\",\"pointValue\":\"2.67\"},{\"feedback\":\"missing the why\",\"pointValue\":\"2.67\"},\n" +
+          "{\"feedback\":\"But you did not describe 3 ideas\",\"pointValue\":\"0\"}]},\n" +
+          "{\"sectionName\":\"Written Pitch\",\"feedbacks\":[{\"feedback\":\"Written Pitch: \",\"pointValue\":\"0\"},{\"feedback\":\"Well written pitch\",\"pointValue\":\"5\"},{\"feedback\":\"No clear revisions\",\"pointValue\":\"3\"}]}]")
+
+      function renderFeedbackRowHTML(feedback = "", pointValue = 0) {
+          return $(" <a class=\"list-group-item list-group-item-action\" data-toggle=\"list\">\n" +
+              "                  <div class=\"row\">\n" +
+              "                    <input type=\"text\" name='feedback-text' placeholder='Feedback' value=\"" + feedback + "\" class=\"col-sm-6 form-control\"/>\n" +
+              "                    <input type=\"text\" name='point-value' placeholder='Points' value=\"" + pointValue + "\"\n" +
+              "                           class=\"col-sm-2 offset-sm-1 form-control\"/>\n" +
+              "                    <button type=\"button\" class=\"col-sm-2 offset-sm-1 btn btn-success\"\n" +
+              "                            onclick=\"addFeedback(this);\">Add\n" +
+              "                    </button>\n" +
+              "                  </div>\n" +
+              "                </a>\n"
+          )
+      }
+
+      function renderSectionHTML(sectionName = "", feedbackArray = [{ feedback: "", pointValue: 0 }]) {
+          const feedbacksHTML = feedbackArray.map((feedback) => renderFeedbackRowHTML(feedback.feedback, feedback.pointValue)).reduce((prev, curr) => prev + curr.prop('outerHTML'), "")
+          console.log(feedbacksHTML);
+          return $("<div class=\"card\" style=\"\">\n" +
+              "        <div class=\"card-body\">\n" +
+              "<div class=\"row\" style=\"margin-top: 10px;\">\n" +
+              "                  <div class=\"row\" style='margin-left:0px;'>\n" +
+              "         <input type=\"text\" placeholder='Section Name' value=\"" + sectionName + "\" class=\"col-sm-8 form-control\" style=\"margin-bottom:10px;\"/>" +
+              "         <input type=\"text\" value='0' class=\"section-score col-sm-3 offset-1 form-control\" style=\"margin-bottom:10px;\"/>" +
+              "            </div>\n" +
+              "          <p class=\"card-text\">Set the points value to 0 to add feedback without affecting the score</p>\n" +
+              "          <div class=\"col-12\">\n" +
+              "            <div class=\"row\">\n" +
+              "              <div class=\"col-12 list-group\" id=\"list-tab\" role=\"tablist\">\n" +
+              "                <a class=\"list-group-item list-group-item-action\" data-toggle=\"list\" onclick=\"addFeedbackRow(this);\">Add\n" +
+              "                  new...</a>\n" +
+              feedbacksHTML +
+              "              </div>\n" +
+              "            </div>\n" +
+              "            <div class=\"row\" style=\"margin-top: 10px;\">\n" +
+              "              <button type=\"button\" class=\"btn btn-danger\">Delete</button>\n" +
+              "            </div>\n" +
+              "          </div>\n" +
+              "\n" +
+              "        </div>\n" +
+              "\n" +
+              "      </div>")
+      }
+
+      function renderTotalHTML() {
+          return $("<div class=\"card\" style=\"\">\n" +
+              "        <div class=\"card-body\">\n" +
+              "          <h5 class=\"card-title\">Total</h5>\n" +
+              "          <h6 class=\"card-subtitle mb-2 text-muted\">Total Points: <span id=\"total-score\">0</span></h6>\n" +
+              "          <textarea id=\"feedback-box\" rows=\"3\" type=\"text\" placeholder='Feedback'\n" +
+              "                    class=\"col-sm-12 form-control\"></textarea>\n" +
+              "<button type=\"button\" class=\"btn btn-danger\" style=\"margin-top:10px;\" onclick=\"clearAll()\">Clear</button>\n"+
+              "        </div>\n" +
+              "      </div>\n" +
+              "    </div>")
+      }
+
+      function renderHTML(sections) {
+          let sectionsHTML = sections.map((section) => renderSectionHTML(section.sectionName, section.feedbacks))
+          console.log(sectionsHTML);
+
+          sectionsHTML.unshift(renderTotalHTML())
+          return sectionsHTML
+      }
+
+
+      function addFeedbackRow(context) {
+          $(context).parent().append(renderFeedbackRowHTML())
+      }
+
+      function addFeedbackTextToFeedback(context) {
+          if ($(context).parent().children('input[name="feedback-text"]').val() !== "") {
+              $("#feedback-box").val($("#feedback-box").val() + $(context).parent().children('input[name="feedback-text"]').val())
+          }
+      }
+
+      function addToTotalScore(context) {
+          if ($(context).parent().children('input[name="point-value"]').val() !== "") {
+              const value = parseFloat($(context).parent().children('input[name="point-value"]').val())
+              $("#total-score").text((parseFloat($("#total-score").text()) + value).toFixed(2))
+              const sectionScoreElement = $(context).parent().parent().parent().parent().parent().parent().find(".section-score")
+              console.log(sectionScoreElement.val());
+              sectionScoreElement.val((parseFloat(sectionScoreElement.val()) + value).toFixed(2))
+
+          } else {
+              alert("Must have score")
+          }
+      }
+
+      function addFeedback(context) {
+          addFeedbackTextToFeedback(context)
+          addToTotalScore(context)
+      }
+
+
+      function setUpPage(layout) {
+          $("#sections").html(renderHTML(layout))
+          $("#json-file").val(JSON.stringify(layout))
+      }
+
+      function loadJSON() {
+          const parsed = JSON.parse($("#json-file").val())
+          setUpPage(parsed)
+      }
+
+      function clearAll(){
+          $("#total-score").text(0)
+          $("#feedback-box").val("")
+          $('.section-score').each(function(i, obj) {
+              $(obj).val(0)
+          });
+
+      }
+
+      $(document).ready(function () {
+          setUpPage(example_gradesheet)
+      });
+
+  </script>
+
+  <meta charset="UTF-8">
+
+
+  <title>TA Gradesheet</title>
+</head>
+<div class="container" style="width:90%;margin-left:auto;margin-right:auto;">
+  <div style="height: 30px;"></div>
+  <div class="row">
+    <div class="col-sm-3" id="sidebar">
+      <div class="row">
+        <div class="card" style="">
+          <div class="card-body" style="background-color: #d0d4d8">
+            <h5 class="card-title">Feedback Generator</h5>
+            <p class="card-text">This tool is used to generate student feedback.
+              Set up your assignment grading, and then quickly generate helpful feedback. DO NOT PUT STUDENT INFORMATION
+              IN
+              THIS APPLICATION</p>
+          </div>
+        </div>
+        <div class="card" style="">
+          <div class="card-body" style="background-color: #d0d4d8">
+            <h5 class="card-title">Loading from Json</h5>
+            <p class="card-text">If you have a preformatted JSON, paste it here to load. See and example of how to do
+              this in the GitHub repo</p>
+            <textarea id="json-file" rows="3" type="text" placeholder='JSON data'
+                      class="col-sm-12 form-control" style="margin-bottom:10px;"></textarea>
+            <button type="button" class="btn btn-info" onclick="loadJSON(this)">Load</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-9" id="sections" style="border-radius: 10px;">
+
+
+    </div>
+    <div class="row">
+
+    </div>
+  </div>
+
+</html>
