@@ -23,10 +23,11 @@
     .card {
       margin-bottom: 15px;
     }
+    .top-buffer { margin-top:10px; }
   </style>
 
   <script>
-      const example_gradesheet = JSON.parse("[{\"sectionName\":\"Pitch\",\"feedbacks\":[{\"feedback\":\"Pitch: \",\"pointValue\":\"0\"},{\"feedback\":\"Good pitch\",\"pointValue\":\"10\"},{\"feedback\":\" but try to fidget less\",\"pointValue\":\"-1\"},{\"feedback\":\" and make better eye contact with your audience.\",\"pointValue\":\"-1\"}]},{\"sectionName\":\"Brainstorming list: \",\"feedbacks\":[{\"feedback\":\"Brainstorming list: \",\"pointValue\":\"0\"},{\"feedback\":\"10 ideas or more \",\"pointValue\":\"5\"},{\"feedback\":\"5-1 ideas \",\"pointValue\":\"3\"},{\"feedback\":\"Not readable \",\"pointValue\":\"-1\"}]},{\"sectionName\":\"Developing ideas: \",\"feedbacks\":[{\"feedback\":\"Developing ideas: \",\"pointValue\":\"0\"},{\"feedback\":\"First idea was \",\"pointValue\":\"0\"},{\"feedback\":\"Second idea was \",\"pointValue\":\"0\"},{\"feedback\":\"Third idea was \",\"pointValue\":\"0\"},{\"feedback\":\"a well described idea \",\"pointValue\":\"3.33\"},{\"feedback\":\"missing the who \",\"pointValue\":\"2.67\"},{\"feedback\":\"missing the why \",\"pointValue\":\"2.67\"},{\"feedback\":\"But you did not describe 3 ideas\",\"pointValue\":\"0\"}]},{\"sectionName\":\"Written Pitch\",\"feedbacks\":[{\"feedback\":\"Written Pitch: \",\"pointValue\":\"0\"},{\"feedback\":\"Well written pitch \",\"pointValue\":\"5\"},{\"feedback\":\"No clear revisions \",\"pointValue\":\"3\"},{\"feedback\":\"-Austin\",\"pointValue\":\"0\"}]}]")
+      const example_gradesheet = JSON.parse("[{\"sectionName\":\"Pitch\",\"feedbacks\":[{\"feedback\":\"Good pitch\",\"pointValue\":\"10\"},{\"feedback\":\" but try to fidget less\",\"pointValue\":\"-1\"},{\"feedback\":\" and make better eye contact with your audience.\",\"pointValue\":\"-1\"}]},{\"sectionName\":\"Brainstorming list\",\"feedbacks\":[{\"feedback\":\"10 ideas or more \",\"pointValue\":\"5\"},{\"feedback\":\"5-1 ideas \",\"pointValue\":\"3\"},{\"feedback\":\"Not readable \",\"pointValue\":\"-1\"}]},{\"sectionName\":\"Developing ideas\",\"feedbacks\":[{\"feedback\":\"First idea was \",\"pointValue\":\"0\"},{\"feedback\":\"Second idea was \",\"pointValue\":\"0\"},{\"feedback\":\"Third idea was \",\"pointValue\":\"0\"},{\"feedback\":\"a well described idea \",\"pointValue\":\"3.33\"},{\"feedback\":\"missing the who \",\"pointValue\":\"2.67\"},{\"feedback\":\"missing the why \",\"pointValue\":\"2.67\"},{\"feedback\":\"But you did not describe 3 ideas\",\"pointValue\":\"0\"}]},{\"sectionName\":\"Written Pitch\",\"feedbacks\":[{\"feedback\":\"Well written pitch \",\"pointValue\":\"5\"},{\"feedback\":\"No clear revisions \",\"pointValue\":\"3\"}]},{\"sectionName\":\"\",\"feedbacks\":[{\"feedback\":\"-Austin\",\"pointValue\":\"0\"}]}]")
 
       function renderFeedbackRowHTML(feedback = "", pointValue = 0) {
           return $(" <a class=\"list-group-item list-group-item-action\" data-toggle=\"list\">\n" +
@@ -47,27 +48,34 @@
           console.log(feedbacksHTML);
           return $("<div class=\"card\" style=\"\">\n" +
               "        <div class=\"card-body\">\n" +
-              "<div class=\"row\" style=\"margin-top: 10px;\">\n" +
+              "<div class=\"container\">\n" +
               "                  <div class=\"row\" style='margin-left:0px;'>\n" +
-              "         <input type=\"text\" placeholder='Section Name' value=\"" + sectionName + "\" class=\"col-sm-8 form-control\" style=\"margin-bottom:10px;\"/>" +
-              "         <input type=\"text\" value='0' class=\"section-score col-sm-3 offset-1 form-control\" style=\"margin-bottom:10px;\"/>" +
-              "            </div>\n" +
-              "          <p class=\"card-text\">Set the points value to 0 to add feedback without affecting the score</p>\n" +
-              "          <div class=\"col-12\">\n" +
-              "            <div class=\"row\">\n" +
-              "              <div class=\"col-12 list-group\" id=\"list-tab\" role=\"tablist\">\n" +
-              "                <a class=\"list-group-item list-group-item-action\" data-toggle=\"list\" onclick=\"addFeedbackRow(this);\">Add\n" +
+              "                     <input type=\"text\" placeholder='Section Name' value=\"" + sectionName + "\" class=\"section-name-box col-sm-8 form-control\" style=\"margin-bottom:10px;\"/>" +
+              "                     <input type=\"text\" value='0' class=\"section-score col-sm-3 offset-1 form-control\" style=\"margin-bottom:10px;\"/>" +
+              "                   </div>" +
+              "                 <div class=\"row\" style='margin-left:0px;'>\n" +
+              "                     <p class=\"card-text\">Set the points value to 0 to add feedback without affecting the score. Clicking finish adds the score and feedback to the total at the top.</p>\n" +
+              "                 </div>" +
+              "                 <div class='row top-buffer' style='margin-left:0px;'>\n" +
+              "                   <textarea  rows=\"3\" type=\"text\" placeholder='Feedback'\n" +
+              "                    class=\"section-feedback-box col-sm-12 form-control\"></textarea>\n" +
+              "                 </div>\n" +
+              "                 <div class=\"row\" style='margin-left:0px;'>\n" +
+              "                   <div class=\"col-12\">\n" +
+              "                   <div class=\"row top-buffer\">\n" +
+              "                     <div class=\"col-12 list-group\" id=\"list-tab\" role=\"tablist\">\n" +
+              "                       <a class=\"list-group-item list-group-item-action\" data-toggle=\"list\" onclick=\"addFeedbackRow(this);\">Add\n" +
               "                  new...</a>\n" +
               feedbacksHTML +
-              "              </div>\n" +
+              "                     </div>\n" +
+              "                    </div>\n" +
+              "                  </div>\n" +
               "            </div>\n" +
-              "            <div class=\"row\" style=\"margin-top: 10px;\">\n" +
-              "              <button type=\"button\" class=\"btn btn-danger\">Delete</button>\n" +
-              "            </div>\n" +
+              "            <div class=\"row top-buffer\" style='margin-left:0px;padding-right: 20px;'>\n" +
+              "              <button type=\"button\" class=\"col-2 btn offset-sm-10 btn-info\" onclick='finishSection(this)' >Finish</button>\n" +
+
               "          </div>\n" +
-              "\n" +
-              "        </div>\n" +
-              "\n" +
+              "          </div>\n" +
               "      </div>")
       }
 
@@ -76,7 +84,7 @@
               "        <div class=\"card-body\">\n" +
               "          <h5 class=\"card-title\">Total</h5>\n" +
               "          <h6 class=\"card-subtitle mb-2 text-muted\">Total Points: <span id=\"total-score\">0</span></h6>\n" +
-              "          <textarea id=\"feedback-box\" rows=\"3\" type=\"text\" placeholder='Feedback'\n" +
+              "          <textarea id=\"feedback-box\" rows=\"6\" type=\"text\" placeholder='Feedback'\n" +
               "                    class=\"col-sm-12 form-control\"></textarea>\n" +
               "<button type=\"button\" class=\"btn btn-danger\" style=\"margin-top:10px;\" onclick=\"clearAll()\">Clear</button>\n"+
               "        </div>\n" +
@@ -92,23 +100,23 @@
           return sectionsHTML
       }
 
-
       function addFeedbackRow(context) {
           $(context).parent().append(renderFeedbackRowHTML())
       }
 
       function addFeedbackTextToFeedback(context) {
-          if ($(context).parent().children('input[name="feedback-text"]').val() !== "") {
-              $("#feedback-box").val($("#feedback-box").val() + $(context).parent().children('input[name="feedback-text"]').val())
+          const correspondingFeedbackTextElement = $(context).parent().children('input[name="feedback-text"]')
+          if (correspondingFeedbackTextElement.val() !== "") {
+              const sectionFeedbackElement = $(context).parent().parent().parent().parent().parent().parent().parent().find('.section-feedback-box')
+              console.log(sectionFeedbackElement);
+              sectionFeedbackElement.val(sectionFeedbackElement.val() + correspondingFeedbackTextElement.val())
           }
       }
 
       function addToTotalScore(context) {
           if ($(context).parent().children('input[name="point-value"]').val() !== "") {
               const value = parseFloat($(context).parent().children('input[name="point-value"]').val())
-              $("#total-score").text((parseFloat($("#total-score").text()) + value).toFixed(2))
-              const sectionScoreElement = $(context).parent().parent().parent().parent().parent().parent().find(".section-score")
-              console.log(sectionScoreElement.val());
+              const sectionScoreElement = $(context).parent().parent().parent().parent().parent().parent().parent().find(".section-score")
               sectionScoreElement.val((parseFloat(sectionScoreElement.val()) + value).toFixed(2))
 
           } else {
@@ -119,6 +127,20 @@
       function addFeedback(context) {
           addFeedbackTextToFeedback(context)
           addToTotalScore(context)
+      }
+
+      function finishSection(context) {
+          const sectionName = $(context).parent().parent().find('.section-name-box').val()
+          const sectionFeedback = $(context).parent().parent().find('.section-feedback-box').val()
+          const sectionScore = $(context).parent().parent().find('.section-score').val()
+          console.log(sectionScore);
+          if(sectionName !== "") {
+              $("#feedback-box").val($("#feedback-box").val() + sectionName + ': ')
+          }
+          if(sectionFeedback !== "") {
+              $("#feedback-box").val($("#feedback-box").val() + sectionFeedback + '\n')
+          }
+          $("#total-score").text((parseFloat($("#total-score").text()) + parseFloat(sectionScore)).toFixed(2))
       }
 
 
@@ -137,6 +159,9 @@
           $("#feedback-box").val("")
           $('.section-score').each(function(i, obj) {
               $(obj).val(0)
+          });
+          $('.section-feedback-box').each(function(i, obj) {
+              $(obj).val("")
           });
 
       }
